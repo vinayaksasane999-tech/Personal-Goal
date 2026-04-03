@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goal Saver</title>
+
+<style>
+body {
+  font-family: -apple-system, Arial;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+}
+
+input {
+  padding: 12px;
+  margin: 5px;
+  border-radius: 10px;
+  border: none;
+  width: 30%;
+}
+
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #22c55e;
+  color: white;
+  font-weight: bold;
+}
+
+.card {
+  background: #1e293b;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 15px;
+}
+
+.bar {
+  width: 100%;
+  height: 10px;
+  background: #334155;
+  border-radius: 10px;
+}
+
+.fill {
+  height: 10px;
+  background: linear-gradient(to right, #22c55e, #4ade80);
+  border-radius: 10px;
+}
+
+small {
+  color: #94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<h2>My Goals 🎯</h2>
+
+<div style="text-align:center;">
+  <input id="name" placeholder="Goal name">
+  <input id="amount" placeholder="Amount">
+  <input id="date" type="date">
+  <br>
+  <button onclick="addGoal()">Add Goal</button>
+</div>
+
+<div id="goals"></div>
+
+<script>
+let goals = JSON.parse(localStorage.getItem("goals")) || [];
+
+function addGoal() {
+  let goal = {
+    name: document.getElementById("name").value,
+    target: Number(document.getElementById("amount").value),
+    date: document.getElementById("date").value,
+    saved: 0
+  };
+  goals.push(goal);
+  localStorage.setItem("goals", JSON.stringify(goals));
+  render();
+}
+
+function render() {
+  let container = document.getElementById("goals");
+  container.innerHTML = "";
+
+  goals.forEach((g, i) => {
+    let today = new Date();
+    let target = new Date(g.date);
+    let days = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+
+    let remaining = g.target - g.saved;
+    let daily = Math.ceil(remaining / days);
+    let percent = Math.min(100, (g.saved / g.target) * 100);
+
+    container.innerHTML += `
+      <div class="card">
+        <h3>${g.name}</h3>
+        <small>₹${g.saved} / ₹${g.target}</small>
+
+        <p>Save ₹${daily}/day • ${days} days left</p>
+
+        <div class="bar">
+          <div class="fill" style="width:${percent}%"></div>
+        </div>
+
+        <br>
+        <button onclick="save(${i})">Save Today</button>
+      </div>
+    `;
+  });
+}
+
+function save(i) {
+  let g = goals[i];
+
+  let today = new Date();
+  let target = new Date(g.date);
+  let days = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+
+  let remaining = g.target - g.saved;
+  let daily = Math.ceil(remaining / days);
+
+  g.saved += daily;
+
+  localStorage.setItem("goals", JSON.stringify(goals));
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
