@@ -16,14 +16,14 @@ h2 {
   text-align: center;
 }
 
-/* INPUT CARD */
+/* INPUT SECTION */
 .input-box {
   text-align: center;
-  padding: 15px;
+  margin-bottom: 20px;
 }
 
 input {
-  padding: 12px;
+  padding: 10px;
   margin: 5px;
   border-radius: 10px;
   border: none;
@@ -31,32 +31,18 @@ input {
 }
 
 button {
-  padding: 10px 16px;
-  border-radius: 12px;
+  padding: 10px 15px;
+  border-radius: 10px;
   border: none;
   font-weight: 600;
 }
 
-/* ADD BUTTON */
-.add-btn {
-  background: #22c55e;
-  color: white;
-}
+/* BUTTONS */
+.add-btn { background: #22c55e; color: white; }
+.save-btn { background: #3b82f6; color: white; }
+.delete-btn { background: #ef4444; color: white; margin-left: 8px; }
 
-/* SAVE BUTTON */
-.save-btn {
-  background: #3b82f6;
-  color: white;
-}
-
-/* DELETE BUTTON */
-.delete-btn {
-  background: #ef4444;
-  color: white;
-  margin-left: 10px;
-}
-
-/* NEUMORPHIC CARD (LIKE IMAGE) */
+/* NEUMORPHIC CARD */
 .neo-card {
   background: #e5e7eb;
   border-radius: 20px;
@@ -71,8 +57,8 @@ button {
 
 /* CIRCLE */
 .circle {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   margin: auto;
   position: relative;
 }
@@ -91,25 +77,28 @@ circle {
   r: 40;
 }
 
-/* BACK */
+/* BACKGROUND RING */
 .bg {
   stroke: #d1d5db;
 }
 
-/* PROGRESS */
+/* PROGRESS ARC */
 .progress {
   stroke-linecap: round;
   stroke-dasharray: 251;
   transition: stroke-dashoffset 0.5s ease;
+
+  /* Soft shadow */
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
 }
 
-/* TEXT */
+/* PERCENT TEXT */
 .percent {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: bold;
+  font-weight: 600;
 }
 
 /* INFO */
@@ -174,27 +163,28 @@ function render() {
 
     let offset = 251 - (251 * percent / 100);
 
-    // Different colors per goal
-    let colors = [
-      "#22c55e",
-      "#3b82f6",
-      "#a855f7",
-      "#f97316"
-    ];
-
-    let color = colors[i % colors.length];
-
     container.innerHTML += `
       <div class="neo-card">
-        
+
         <div class="circle">
           <svg viewBox="0 0 100 100">
+
+            <defs>
+              <linearGradient id="grad${i}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+            </defs>
+
             <circle class="bg"></circle>
+
             <circle class="progress"
-              stroke="${color}"
-              style="stroke-dashoffset:${offset}">
+              stroke="url(#grad${i})"
+              stroke-dashoffset="${offset}">
             </circle>
+
           </svg>
+
           <div class="percent">${Math.round(percent)}%</div>
         </div>
 
@@ -225,6 +215,7 @@ function save(i) {
 
   g.saved += daily;
 
+  // Google Sheet
   fetch("https://script.google.com/macros/s/AKfycbz5FKKYyo36k9xfjWENw5borFMxBnw-9-rR4Az2785wcdPT1aXM4b9Qe74YzaqGxKEw/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
