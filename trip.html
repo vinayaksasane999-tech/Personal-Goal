@@ -12,110 +12,110 @@ body {
   padding: 20px;
 }
 
-/* Glass Card */
-.glass {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-}
-
 h2 {
   text-align: center;
 }
 
-/* Inputs */
+/* INPUT CARD */
+.input-box {
+  text-align: center;
+  padding: 15px;
+}
+
 input {
   padding: 12px;
-  margin: 6px;
-  border-radius: 12px;
+  margin: 5px;
+  border-radius: 10px;
   border: none;
   width: 28%;
-  background: rgba(255,255,255,0.1);
-  color: white;
 }
 
-/* iOS Button */
 button {
-  padding: 12px 18px;
+  padding: 10px 16px;
+  border-radius: 12px;
   border: none;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #34d399, #22c55e);
-  color: white;
   font-weight: 600;
-  box-shadow: 
-    0 4px 12px rgba(0,0,0,0.3),
-    inset 0 -2px 4px rgba(0,0,0,0.2),
-    inset 0 2px 4px rgba(255,255,255,0.2);
-  transition: all 0.2s ease;
 }
 
-button:active {
-  transform: scale(0.96);
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.4);
+/* ADD BUTTON */
+.add-btn {
+  background: #22c55e;
+  color: white;
 }
 
-/* Cards */
-.card {
-  padding: 16px;
-  margin: 15px 0;
+/* SAVE BUTTON */
+.save-btn {
+  background: #3b82f6;
+  color: white;
 }
 
-/* Neumorphic Circle */
-.neo-circle {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  position: relative;
-  margin: 10px 0;
+/* DELETE BUTTON */
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  margin-left: 10px;
+}
 
-  background: #0f172a;
+/* NEUMORPHIC CARD (LIKE IMAGE) */
+.neo-card {
+  background: #e5e7eb;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 20px 0;
+  color: #111;
 
   box-shadow:
-    6px 6px 12px #0b1220,
-    -6px -6px 12px #1b2a4a;
+    8px 8px 16px #cbd5e1,
+    -8px -8px 16px #ffffff;
 }
 
-.neo-circle svg {
+/* CIRCLE */
+.circle {
+  width: 100px;
+  height: 100px;
+  margin: auto;
+  position: relative;
+}
+
+.circle svg {
   transform: rotate(-90deg);
   width: 100%;
   height: 100%;
 }
 
-.neo-circle circle {
+circle {
   fill: none;
   stroke-width: 8;
-  cx: 45;
-  cy: 45;
-  r: 35;
+  cx: 50;
+  cy: 50;
+  r: 40;
 }
 
-.neo-bg {
-  stroke: rgba(255,255,255,0.1);
+/* BACK */
+.bg {
+  stroke: #d1d5db;
 }
 
-.neo-progress {
-  stroke: #22c55e;
+/* PROGRESS */
+.progress {
   stroke-linecap: round;
-  stroke-dasharray: 220;
-  transition: stroke-dashoffset 0.6s ease;
-  filter: drop-shadow(0 0 6px #22c55e);
+  stroke-dasharray: 251;
+  transition: stroke-dashoffset 0.5s ease;
 }
 
-.neo-text {
+/* TEXT */
+.percent {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 14px;
   font-weight: bold;
 }
 
-/* Info text */
-small {
-  color: #cbd5f5;
+/* INFO */
+.info {
+  text-align: center;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -124,12 +124,12 @@ small {
 
 <h2>My Goals 🎯</h2>
 
-<div class="glass" style="text-align:center; padding:18px;">
+<div class="input-box">
   <input id="name" placeholder="Goal name">
   <input id="amount" placeholder="Amount">
   <input id="date" type="date">
   <br>
-  <button onclick="addGoal()">Add Goal</button>
+  <button class="add-btn" onclick="addGoal()">Add Goal</button>
 </div>
 
 <div id="goals"></div>
@@ -151,6 +151,13 @@ function addGoal() {
   render();
 }
 
+// DELETE GOAL
+function removeGoal(i) {
+  goals.splice(i, 1);
+  localStorage.setItem("goals", JSON.stringify(goals));
+  render();
+}
+
 // RENDER
 function render() {
   let container = document.getElementById("goals");
@@ -165,25 +172,41 @@ function render() {
     let daily = Math.ceil(remaining / days);
     let percent = Math.min(100, (g.saved / g.target) * 100);
 
+    let offset = 251 - (251 * percent / 100);
+
+    // Different colors per goal
+    let colors = [
+      "#22c55e",
+      "#3b82f6",
+      "#a855f7",
+      "#f97316"
+    ];
+
+    let color = colors[i % colors.length];
+
     container.innerHTML += `
-      <div class="card glass">
-        <h3>${g.name}</h3>
-        <small>₹${g.saved} / ₹${g.target}</small>
-
-        <p>Save ₹${daily}/day • ${days} days left</p>
-
-        <!-- Circular Progress -->
-        <div class="neo-circle">
-          <svg>
-            <circle class="neo-bg"></circle>
-            <circle class="neo-progress"
-              style="stroke-dashoffset:${220 - (220 * percent / 100)}"></circle>
+      <div class="neo-card">
+        
+        <div class="circle">
+          <svg viewBox="0 0 100 100">
+            <circle class="bg"></circle>
+            <circle class="progress"
+              stroke="${color}"
+              style="stroke-dashoffset:${offset}">
+            </circle>
           </svg>
-          <div class="neo-text">${Math.round(percent)}%</div>
+          <div class="percent">${Math.round(percent)}%</div>
         </div>
 
-        <br>
-        <button onclick="save(${i})">Save Today</button>
+        <div class="info">
+          <h3>${g.name}</h3>
+          <p>₹${g.saved} / ₹${g.target}</p>
+          <p>Save ₹${daily}/day • ${days} days left</p>
+
+          <button class="save-btn" onclick="save(${i})">Save</button>
+          <button class="delete-btn" onclick="removeGoal(${i})">Cancel</button>
+        </div>
+
       </div>
     `;
   });
@@ -202,12 +225,9 @@ function save(i) {
 
   g.saved += daily;
 
-  // SEND TO GOOGLE SHEET
   fetch("https://script.google.com/macros/s/AKfycbz5FKKYyo36k9xfjWENw5borFMxBnw-9-rR4Az2785wcdPT1aXM4b9Qe74YzaqGxKEw/exec", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       goal: g.name,
       amount: daily
