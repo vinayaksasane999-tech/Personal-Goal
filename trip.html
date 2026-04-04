@@ -15,6 +15,7 @@ body {
 
 h2 {
   text-align: center;
+  font-weight: 600;
 }
 
 /* INPUT */
@@ -24,31 +25,32 @@ h2 {
 }
 
 input {
-  padding: 12px;
+  padding: 14px;
   margin: 6px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: none;
   width: 28%;
   background: rgba(255,255,255,0.08);
   color: white;
 }
 
-/* BUTTON */
+/* ADD BUTTON */
 .add-btn {
-  padding: 13px 22px;
-  border-radius: 14px;
+  padding: 14px 24px;
+  border-radius: 20px;
   border: none;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
+  background: linear-gradient(135deg, #34c759, #28a745);
+  color: #fff;
   font-weight: 600;
+  font-size: 15px;
 }
 
 /* CARD */
 .card {
-  width: 280px;
+  width: 290px;
   margin: auto;
-  padding: 25px;
-  border-radius: 30px;
+  padding: 28px;
+  border-radius: 32px;
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.12);
@@ -57,8 +59,8 @@ input {
 
 /* CIRCLE */
 .circle {
-  width: 160px;
-  height: 160px;
+  width: 170px;
+  height: 170px;
   margin: auto;
   position: relative;
 }
@@ -72,7 +74,7 @@ svg {
 /* BG */
 .bg {
   fill: none;
-  stroke: rgba(255,255,255,0.15);
+  stroke: rgba(255,255,255,0.12);
   stroke-width: 12;
 }
 
@@ -82,35 +84,55 @@ svg {
   stroke-width: 12;
   stroke-linecap: round;
   stroke: url(#grad);
-  filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.4));
   transition: stroke-dashoffset 1s ease;
 }
 
-/* PERCENT */
+/* TEXT */
 .percent {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
 }
 
-/* SUCCESS TICK */
-.tick {
+/* ANIMATED TICK SVG */
+.tick-svg {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  font-size: 40px;
-  color: #22c55e;
-  animation: pop 0.5s ease forwards;
+  transform: translate(-50%, -50%);
 }
 
-@keyframes pop {
-  0% { transform: translate(-50%, -50%) scale(0); }
-  70% { transform: translate(-50%, -50%) scale(1.2); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+.tick-circle {
+  stroke: #34c759;
+  stroke-width: 6;
+  fill: none;
+  stroke-dasharray: 314;
+  stroke-dashoffset: 314;
+  animation: circleAnim 0.6s ease forwards;
+}
+
+.tick-mark {
+  stroke: #34c759;
+  stroke-width: 6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: tickAnim 0.4s ease forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes circleAnim {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes tickAnim {
+  to { stroke-dashoffset: 0; }
 }
 
 /* TEXT */
@@ -125,23 +147,29 @@ svg {
   color: #cbd5f5;
 }
 
-/* BUTTONS */
+/* APPLE STYLE BUTTONS */
 .btn {
-  margin-top: 12px;
-  padding: 13px;
-  border-radius: 14px;
+  margin-top: 14px;
+  padding: 15px;
+  border-radius: 20px;
   border: none;
   width: 100%;
   font-weight: 600;
+  font-size: 16px;
+  color: white;
+  backdrop-filter: blur(10px);
 }
 
+/* SAVE (Apple Blue) */
 .save {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #0a84ff, #0066ff);
 }
 
+/* CANCEL (Apple Red) */
 .delete {
-  background: #ef4444;
+  background: linear-gradient(135deg, #ff453a, #ff3b30);
 }
+
 </style>
 </head>
 
@@ -210,10 +238,15 @@ function render() {
 
           ${
             percent >= 100
-            ? `<div class="tick">✔</div>`
+            ? `
+            <svg class="tick-svg" width="140" height="140" viewBox="0 0 120 120">
+              <circle class="tick-circle" cx="60" cy="60" r="50"/>
+              <path class="tick-mark" d="M35 65 L55 85 L85 45"/>
+            </svg>
+            `
             :
-            `<svg viewBox="0 0 150 150">
-
+            `
+            <svg viewBox="0 0 150 150">
               <defs>
                 <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stop-color="#22c55e"/>
@@ -229,13 +262,12 @@ function render() {
                 cy="75"
                 r="${radius}"
                 stroke-dasharray="${circumference}"
-                stroke-dashoffset="${circumference}"
-                data-offset="${offset}">
+                stroke-dashoffset="${offset}">
               </circle>
-
             </svg>
 
-            <div class="percent">${Math.round(percent)}%</div>`
+            <div class="percent">${Math.round(percent)}%</div>
+            `
           }
 
         </div>
@@ -250,12 +282,6 @@ function render() {
       </div>
     `;
   });
-
-  setTimeout(() => {
-    document.querySelectorAll(".progress").forEach(el => {
-      el.style.strokeDashoffset = el.getAttribute("data-offset");
-    });
-  }, 100);
 }
 
 // SAVE
