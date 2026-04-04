@@ -13,10 +13,8 @@ body {
   color: white;
 }
 
-/* HEADER */
 h2 {
   text-align: center;
-  font-weight: 600;
 }
 
 /* INPUT */
@@ -35,7 +33,7 @@ input {
   color: white;
 }
 
-/* ADD BUTTON */
+/* BUTTON */
 .add-btn {
   padding: 13px 22px;
   border-radius: 14px;
@@ -51,11 +49,9 @@ input {
   margin: auto;
   padding: 25px;
   border-radius: 30px;
-
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.12);
-
   text-align: center;
 }
 
@@ -73,7 +69,7 @@ svg {
   transform: rotate(-90deg);
 }
 
-/* BACK RING */
+/* BG */
 .bg {
   fill: none;
   stroke: rgba(255,255,255,0.15);
@@ -85,24 +81,39 @@ svg {
   fill: none;
   stroke-width: 12;
   stroke-linecap: round;
-
   stroke: url(#grad);
-
   filter: drop-shadow(0 0 6px rgba(59,130,246,0.6));
-
   transition: stroke-dashoffset 1s ease;
 }
 
-/* TEXT */
+/* PERCENT */
 .percent {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
 }
 
+/* SUCCESS TICK */
+.tick {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 40px;
+  color: #22c55e;
+  animation: pop 0.5s ease forwards;
+}
+
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  70% { transform: translate(-50%, -50%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* TEXT */
 .title {
   margin-top: 15px;
   font-size: 18px;
@@ -126,12 +137,10 @@ svg {
 
 .save {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
 }
 
 .delete {
   background: #ef4444;
-  color: white;
 }
 </style>
 </head>
@@ -198,33 +207,37 @@ function render() {
       <div class="card">
 
         <div class="circle">
-          <svg viewBox="0 0 150 150">
 
-            <!-- GRADIENT -->
-            <defs>
-              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#22c55e"/>
-                <stop offset="50%" stop-color="#3b82f6"/>
-                <stop offset="100%" stop-color="#a855f7"/>
-              </linearGradient>
-            </defs>
+          ${
+            percent >= 100
+            ? `<div class="tick">✔</div>`
+            :
+            `<svg viewBox="0 0 150 150">
 
-            <!-- BG -->
-            <circle class="bg" cx="75" cy="75" r="${radius}" />
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#22c55e"/>
+                  <stop offset="50%" stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#a855f7"/>
+                </linearGradient>
+              </defs>
 
-            <!-- PROGRESS -->
-            <circle class="progress"
-              cx="75"
-              cy="75"
-              r="${radius}"
-              stroke-dasharray="${circumference}"
-              stroke-dashoffset="${circumference}"
-              data-offset="${offset}">
-            </circle>
+              <circle class="bg" cx="75" cy="75" r="${radius}" />
 
-          </svg>
+              <circle class="progress"
+                cx="75"
+                cy="75"
+                r="${radius}"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${circumference}"
+                data-offset="${offset}">
+              </circle>
 
-          <div class="percent">${Math.round(percent)}%</div>
+            </svg>
+
+            <div class="percent">${Math.round(percent)}%</div>`
+          }
+
         </div>
 
         <div class="title">${g.name}</div>
@@ -238,7 +251,6 @@ function render() {
     `;
   });
 
-  // ANIMATION FIX
   setTimeout(() => {
     document.querySelectorAll(".progress").forEach(el => {
       el.style.strokeDashoffset = el.getAttribute("data-offset");
