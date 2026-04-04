@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Goal Saver</title>
+<title>Goal Saver Premium</title>
 
 <style>
 body {
@@ -13,25 +13,35 @@ body {
   color: white;
 }
 
+/* HEADER */
+h2 {
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 /* INPUT */
 .input-box {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 input {
-  padding: 10px;
+  padding: 12px;
   margin: 5px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
   width: 28%;
+  background: rgba(255,255,255,0.1);
+  color: white;
 }
 
+/* ADD BUTTON */
 .add-btn {
-  padding: 10px 20px;
-  border-radius: 10px;
+  padding: 12px 20px;
+  border-radius: 12px;
   border: none;
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
   font-weight: 600;
 }
@@ -46,15 +56,20 @@ input {
 
 /* GLASS CARD */
 .card {
-  width: 220px;
+  width: 230px;
   padding: 20px;
-  border-radius: 20px;
+  border-radius: 22px;
 
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(18px);
 
-  text-align: center;
+  border: 1px solid rgba(255,255,255,0.15);
+
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }
 
 /* CIRCLE */
@@ -80,32 +95,35 @@ circle {
 }
 
 .bg {
-  stroke: rgba(255,255,255,0.2);
+  stroke: rgba(255,255,255,0.15);
 }
 
 .progress {
   stroke-linecap: round;
   stroke-dasharray: 251;
-  transition: 0.5s;
+  transition: 0.6s ease;
 }
 
-/* TEXT */
+/* PERCENT */
 .percent {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: bold;
   font-size: 20px;
+  font-weight: 600;
 }
 
+/* TEXT */
 .title {
-  margin-top: 10px;
+  margin-top: 12px;
+  text-align: center;
   font-weight: 600;
 }
 
 .info {
-  font-size: 14px;
+  text-align: center;
+  font-size: 13px;
   color: #cbd5f5;
 }
 
@@ -113,21 +131,33 @@ circle {
 .btn {
   margin-top: 10px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
-  color: white;
   font-weight: 600;
   width: 100%;
+  transition: 0.2s;
 }
 
-.save { background: #3b82f6; }
-.delete { background: #ef4444; }
+.save {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.save:active {
+  transform: scale(0.97);
+}
+
+.delete {
+  background: rgba(239,68,68,0.9);
+  color: white;
+}
+
 </style>
 </head>
 
 <body>
 
-<h2 style="text-align:center;">My Goals 🎯</h2>
+<h2>My Goals 🎯</h2>
 
 <div class="input-box">
   <input id="name" placeholder="Goal name">
@@ -142,7 +172,7 @@ circle {
 <script>
 let goals = JSON.parse(localStorage.getItem("goals")) || [];
 
-// ADD GOAL
+// ADD
 function addGoal() {
   let goal = {
     name: document.getElementById("name").value,
@@ -163,6 +193,13 @@ function removeGoal(i) {
   render();
 }
 
+// COLOR LOGIC
+function getColor(percent) {
+  if (percent < 40) return "#ef4444";
+  if (percent < 70) return "#f59e0b";
+  return "#22c55e";
+}
+
 // RENDER
 function render() {
   let container = document.getElementById("goals");
@@ -179,6 +216,8 @@ function render() {
     let percent = Math.min(100, (g.saved / g.target) * 100);
     let offset = 251 - (251 * percent / 100);
 
+    let color = getColor(percent);
+
     container.innerHTML += `
       <div class="card">
 
@@ -186,7 +225,7 @@ function render() {
           <svg viewBox="0 0 100 100">
             <circle class="bg"></circle>
             <circle class="progress"
-              stroke="#22c55e"
+              stroke="${color}"
               stroke-dashoffset="${offset}">
             </circle>
           </svg>
@@ -218,7 +257,6 @@ function save(i) {
 
   g.saved += daily;
 
-  // SEND TO GOOGLE SHEET
   fetch("https://script.google.com/macros/s/AKfycbz5FKKYyo36k9xfjWENw5borFMxBnw-9-rR4Az2785wcdPT1aXM4b9Qe74YzaqGxKEw/exec", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
