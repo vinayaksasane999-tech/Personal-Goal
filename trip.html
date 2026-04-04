@@ -16,7 +16,6 @@ body {
 /* HEADER */
 h2 {
   text-align: center;
-  font-weight: 600;
 }
 
 /* INPUT */
@@ -35,7 +34,7 @@ input {
   color: white;
 }
 
-/* ADD BUTTON */
+/* BUTTON */
 .add-btn {
   padding: 12px 20px;
   border-radius: 12px;
@@ -48,62 +47,71 @@ input {
 /* GRID */
 .container {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
   justify-content: center;
 }
 
-/* GLASS CARD */
+/* CARD */
 .card {
-  width: 260px;
+  width: 280px;
   padding: 25px;
   border-radius: 25px;
 
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(18px);
-
   border: 1px solid rgba(255,255,255,0.15);
 
-  transition: 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
+  text-align: center;
 }
 
 /* CIRCLE */
 .circle {
-  width: 140px;
-  height: 140px;
-  margin: 10px auto;
+  width: 150px;
+  height: 150px;
+  margin: auto;
   position: relative;
 }
 
-svg {
-  width: 100%;
-  height: 100%;
+/* SVG FIX */
+.circle svg {
+  width: 150px;
+  height: 150px;
+  display: block;
 }
 
-/* TEXT */
+/* BACK RING */
+.bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.15);
+  stroke-width: 12;
+}
+
+/* PROGRESS RING */
+.progress {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+/* PERCENT */
 .percent {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 /* TEXT */
 .title {
-  margin-top: 12px;
-  text-align: center;
+  margin-top: 15px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .info {
-  text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   color: #cbd5f5;
 }
 
@@ -113,8 +121,8 @@ svg {
   padding: 12px;
   border-radius: 12px;
   border: none;
-  font-weight: 600;
   width: 100%;
+  font-weight: 600;
 }
 
 .save {
@@ -168,7 +176,7 @@ function removeGoal(i) {
   render();
 }
 
-// COLOR LOGIC
+// COLOR
 function getColor(percent) {
   if (percent < 40) return "#ef4444";
   if (percent < 70) return "#f59e0b";
@@ -192,38 +200,33 @@ function render() {
     let percent = Math.min(100, (g.saved / g.target) * 100);
     let color = getColor(percent);
 
-    let circumference = 2 * Math.PI * 50; // 314
+    let radius = 60;
+    let circumference = 2 * Math.PI * radius;
     let offset = circumference - (percent / 100) * circumference;
 
     container.innerHTML += `
       <div class="card">
 
         <div class="circle">
-          <svg viewBox="0 0 120 120">
+          <svg viewBox="0 0 150 150">
 
             <!-- Background -->
-            <circle
-              cx="60"
-              cy="60"
-              r="50"
-              stroke="rgba(255,255,255,0.15)"
-              stroke-width="10"
-              fill="none"
-            />
+            <circle class="bg"
+              cx="75"
+              cy="75"
+              r="${radius}">
+            </circle>
 
             <!-- Progress -->
-            <circle
-              cx="60"
-              cy="60"
-              r="50"
+            <circle class="progress"
+              cx="75"
+              cy="75"
+              r="${radius}"
               stroke="${color}"
-              stroke-width="10"
-              fill="none"
-              stroke-linecap="round"
               stroke-dasharray="${circumference}"
               stroke-dashoffset="${offset}"
-              transform="rotate(-90 60 60)"
-            />
+              transform="rotate(-90 75 75)">
+            </circle>
 
           </svg>
 
