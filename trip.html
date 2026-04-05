@@ -2,102 +2,46 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Goal Saver Premium</title>
+<title>Goal Saver</title>
 
 <style>
 body {
-  margin: 0;
-  font-family: -apple-system, Arial;
+  font-family: -apple-system;
   background: linear-gradient(135deg, #0f172a, #1e3a8a);
-  padding: 20px;
   color: white;
+  padding: 20px;
 }
 
-h2 { text-align: center; }
-
-.input-box {
-  text-align: center;
-  margin-bottom: 30px;
-}
+h2 { text-align:center; }
 
 input {
-  padding: 14px;
-  margin: 6px;
-  border-radius: 16px;
+  padding: 12px;
+  margin: 5px;
+  border-radius: 12px;
   border: none;
-  width: 28%;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.1);
   color: white;
 }
 
-.add-btn {
-  padding: 14px 24px;
-  border-radius: 20px;
+button {
+  padding: 14px;
+  border-radius: 18px;
   border: none;
-  background: linear-gradient(135deg, #34c759, #28a745);
-  color: #fff;
+  color: white;
   font-weight: 600;
 }
+
+.add-btn { background: #34c759; }
 
 .card {
-  width: 290px;
-  margin: auto;
-  padding: 28px;
-  border-radius: 32px;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 25px;
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.12);
-  text-align: center;
 }
 
-.circle {
-  width: 170px;
-  height: 170px;
-  margin: auto;
-  position: relative;
-}
-
-svg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.bg {
-  fill: none;
-  stroke: rgba(255,255,255,0.12);
-  stroke-width: 12;
-}
-
-.progress {
-  fill: none;
-  stroke-width: 12;
-  stroke-linecap: round;
-  stroke: url(#grad);
-  transition: stroke-dashoffset 1s ease;
-}
-
-.percent {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 24px;
-}
-
-/* BUTTONS */
-.btn {
-  margin-top: 14px;
-  padding: 15px;
-  border-radius: 20px;
-  border: none;
-  width: 100%;
-  font-weight: 600;
-  color: white;
-}
-
-.save { background: linear-gradient(135deg, #0a84ff, #0066ff); }
-.delete { background: linear-gradient(135deg, #ff453a, #ff3b30); }
+.save { background:#0a84ff; width:100%; margin-top:10px;}
+.delete { background:#ff3b30; width:100%; margin-top:10px;}
 
 </style>
 </head>
@@ -106,13 +50,11 @@ svg {
 
 <h2>My Goals 🎯</h2>
 
-<div class="input-box">
-  <input id="name" placeholder="Goal name">
-  <input id="amount" placeholder="Amount">
-  <input id="date" type="date">
-  <br>
-  <button class="add-btn" onclick="addGoal()">Add Goal</button>
-</div>
+<input id="name" placeholder="Goal name">
+<input id="amount" placeholder="Amount">
+<input id="date" type="date">
+<br>
+<button class="add-btn" onclick="addGoal()">Add Goal</button>
 
 <div id="goals"></div>
 
@@ -121,11 +63,21 @@ let goals = JSON.parse(localStorage.getItem("goals")) || [];
 
 // ADD
 function addGoal() {
+  let target = Number(document.getElementById("amount").value);
+  let targetDate = new Date(document.getElementById("date").value);
+  let today = new Date();
+
+  let days = Math.max(1, Math.ceil((targetDate - today)/(1000*60*60*24)));
+
+  let daily = Math.ceil(target / days);
+
   let goal = {
     name: document.getElementById("name").value,
-    target: Number(document.getElementById("amount").value),
+    target: target,
     date: document.getElementById("date").value,
-    saved: 0
+    start: new Date().toISOString(), // 🔥 IMPORTANT
+    saved: 0,
+    daily: daily
   };
 
   goals.push(goal);
@@ -135,7 +87,7 @@ function addGoal() {
 
 // DELETE
 function removeGoal(i) {
-  goals.splice(i, 1);
+  goals.splice(i,1);
   localStorage.setItem("goals", JSON.stringify(goals));
   render();
 }
@@ -145,76 +97,50 @@ function render() {
   let container = document.getElementById("goals");
   container.innerHTML = "";
 
-  goals.forEach((g, i) => {
+  goals.forEach((g,i)=>{
 
     let today = new Date();
+    let start = new Date(g.start);
     let targetDate = new Date(g.date);
 
-    let days = Math.max(1, Math.ceil((targetDate - today)/(1000*60*60*24)));
+    let daysPassed = Math.max(0, Math.floor((today - start)/(1000*60*60*24)));
+    let daysLeft = Math.max(0, Math.ceil((targetDate - today)/(1000*60*60*24)));
 
-    let remaining = g.target - g.saved;
-    let daily = Math.ceil(remaining / days);
+    let expected = daysPassed * g.daily;
 
-    let percent = Math.min(100, (g.saved / g.target) * 100);
-
-    let radius = 60;
-    let circumference = 2 * Math.PI * radius;
-    let offset = circumference - (percent / 100) * circumference;
+    let percent = Math.min(100,(g.saved/g.target)*100);
 
     container.innerHTML += `
       <div class="card">
 
-        <div class="circle">
-          <svg viewBox="0 0 150 150">
-            <defs>
-              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#22c55e"/>
-                <stop offset="50%" stop-color="#3b82f6"/>
-                <stop offset="100%" stop-color="#a855f7"/>
-              </linearGradient>
-            </defs>
-
-            <circle class="bg" cx="75" cy="75" r="${radius}" />
-
-            <circle class="progress"
-              cx="75"
-              cy="75"
-              r="${radius}"
-              stroke-dasharray="${circumference}"
-              stroke-dashoffset="${offset}">
-            </circle>
-          </svg>
-
-          <div class="percent">${Math.round(percent)}%</div>
-        </div>
-
         <h3>${g.name}</h3>
-        <p>₹${g.saved} / ₹${g.target}</p>
-        <p>Save ₹${daily}/day • ${days} days left</p>
 
-        <button class="btn save" onclick="save(${i})">Save</button>
-        <button class="btn delete" onclick="removeGoal(${i})">Cancel</button>
+        <p>Saved: ₹${g.saved} / ₹${g.target}</p>
+
+        <p>Daily: ₹${g.daily}</p>
+
+        <p>Days Passed: ${daysPassed}</p>
+        <p>Days Left: ${daysLeft}</p>
+
+        <p>Expected: ₹${expected}</p>
+
+        <p>Progress: ${Math.round(percent)}%</p>
+
+        <button class="save" onclick="save(${i})">Save ₹${g.daily}</button>
+        <button class="delete" onclick="removeGoal(${i})">Cancel</button>
 
       </div>
     `;
   });
 }
 
-// SAVE (FIXED)
-function save(i) {
+// SAVE
+function save(i){
   let g = goals[i];
 
-  let today = new Date();
-  let targetDate = new Date(g.date);
+  g.saved += g.daily;
 
-  let days = Math.max(1, Math.ceil((targetDate - today)/(1000*60*60*24)));
-  let remaining = g.target - g.saved;
-
-  let daily = Math.ceil(remaining / days);
-
-  g.saved += daily;
-
-  if (g.saved > g.target) g.saved = g.target;
+  if(g.saved > g.target) g.saved = g.target;
 
   localStorage.setItem("goals", JSON.stringify(goals));
   render();
