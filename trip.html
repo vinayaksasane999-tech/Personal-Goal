@@ -2,46 +2,173 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Goal Saver</title>
+<title>Goal Saver Premium</title>
 
 <style>
 body {
-  font-family: -apple-system;
+  margin: 0;
+  font-family: -apple-system, Arial;
   background: linear-gradient(135deg, #0f172a, #1e3a8a);
-  color: white;
   padding: 20px;
-}
-
-h2 { text-align:center; }
-
-input {
-  padding: 12px;
-  margin: 5px;
-  border-radius: 12px;
-  border: none;
-  background: rgba(255,255,255,0.1);
   color: white;
 }
 
-button {
-  padding: 14px;
-  border-radius: 18px;
-  border: none;
-  color: white;
+h2 {
+  text-align: center;
   font-weight: 600;
 }
 
-.add-btn { background: #34c759; }
-
-.card {
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.08);
+/* INPUT */
+.input-box {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.save { background:#0a84ff; width:100%; margin-top:10px;}
-.delete { background:#ff3b30; width:100%; margin-top:10px;}
+input {
+  padding: 14px;
+  margin: 6px;
+  border-radius: 16px;
+  border: none;
+  width: 28%;
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+/* ADD BUTTON */
+.add-btn {
+  padding: 14px 24px;
+  border-radius: 20px;
+  border: none;
+  background: linear-gradient(135deg, #34c759, #28a745);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* CARD */
+.card {
+  width: 290px;
+  margin: auto;
+  padding: 28px;
+  border-radius: 32px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
+  text-align: center;
+}
+
+/* CIRCLE */
+.circle {
+  width: 170px;
+  height: 170px;
+  margin: auto;
+  position: relative;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+/* BG */
+.bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.12);
+  stroke-width: 12;
+}
+
+/* PROGRESS */
+.progress {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke: url(#grad);
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.4));
+  transition: stroke-dashoffset 1s ease;
+}
+
+/* TEXT */
+.percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* ANIMATED TICK SVG */
+.tick-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.tick-circle {
+  stroke: #34c759;
+  stroke-width: 6;
+  fill: none;
+  stroke-dasharray: 314;
+  stroke-dashoffset: 314;
+  animation: circleAnim 0.6s ease forwards;
+}
+
+.tick-mark {
+  stroke: #34c759;
+  stroke-width: 6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: tickAnim 0.4s ease forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes circleAnim {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes tickAnim {
+  to { stroke-dashoffset: 0; }
+}
+
+/* TEXT */
+.title {
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.info {
+  font-size: 14px;
+  color: #cbd5f5;
+}
+
+/* APPLE STYLE BUTTONS */
+.btn {
+  margin-top: 14px;
+  padding: 15px;
+  border-radius: 20px;
+  border: none;
+  width: 100%;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+/* SAVE (Apple Blue) */
+.save {
+  background: linear-gradient(135deg, #0a84ff, #0066ff);
+}
+
+/* CANCEL (Apple Red) */
+.delete {
+  background: linear-gradient(135deg, #ff453a, #ff3b30);
+}
 
 </style>
 </head>
@@ -50,11 +177,13 @@ button {
 
 <h2>My Goals 🎯</h2>
 
-<input id="name" placeholder="Goal name">
-<input id="amount" placeholder="Amount">
-<input id="date" type="date">
-<br>
-<button class="add-btn" onclick="addGoal()">Add Goal</button>
+<div class="input-box">
+  <input id="name" placeholder="Goal name">
+  <input id="amount" placeholder="Amount">
+  <input id="date" type="date">
+  <br>
+  <button class="add-btn" onclick="addGoal()">Add Goal</button>
+</div>
 
 <div id="goals"></div>
 
@@ -63,21 +192,11 @@ let goals = JSON.parse(localStorage.getItem("goals")) || [];
 
 // ADD
 function addGoal() {
-  let target = Number(document.getElementById("amount").value);
-  let targetDate = new Date(document.getElementById("date").value);
-  let today = new Date();
-
-  let days = Math.max(1, Math.ceil((targetDate - today)/(1000*60*60*24)));
-
-  let daily = Math.ceil(target / days);
-
   let goal = {
     name: document.getElementById("name").value,
-    target: target,
+    target: Number(document.getElementById("amount").value),
     date: document.getElementById("date").value,
-    start: new Date().toISOString(), // 🔥 IMPORTANT
-    saved: 0,
-    daily: daily
+    saved: 0
   };
 
   goals.push(goal);
@@ -87,7 +206,7 @@ function addGoal() {
 
 // DELETE
 function removeGoal(i) {
-  goals.splice(i,1);
+  goals.splice(i, 1);
   localStorage.setItem("goals", JSON.stringify(goals));
   render();
 }
@@ -97,37 +216,68 @@ function render() {
   let container = document.getElementById("goals");
   container.innerHTML = "";
 
-  goals.forEach((g,i)=>{
+  goals.forEach((g, i) => {
 
     let today = new Date();
-    let start = new Date(g.start);
-    let targetDate = new Date(g.date);
+    let target = new Date(g.date);
 
-    let daysPassed = Math.max(0, Math.floor((today - start)/(1000*60*60*24)));
-    let daysLeft = Math.max(0, Math.ceil((targetDate - today)/(1000*60*60*24)));
+    let days = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+    let remaining = g.target - g.saved;
+    let daily = Math.ceil(remaining / days);
 
-    let expected = daysPassed * g.daily;
+    let percent = Math.min(100, (g.saved / g.target) * 100);
 
-    let percent = Math.min(100,(g.saved/g.target)*100);
+    let radius = 60;
+    let circumference = 2 * Math.PI * radius;
+    let offset = circumference - (percent / 100) * circumference;
 
     container.innerHTML += `
       <div class="card">
 
-        <h3>${g.name}</h3>
+        <div class="circle">
 
-        <p>Saved: ₹${g.saved} / ₹${g.target}</p>
+          ${
+            percent >= 100
+            ? `
+            <svg class="tick-svg" width="140" height="140" viewBox="0 0 120 120">
+              <circle class="tick-circle" cx="60" cy="60" r="50"/>
+              <path class="tick-mark" d="M35 65 L55 85 L85 45"/>
+            </svg>
+            `
+            :
+            `
+            <svg viewBox="0 0 150 150">
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#22c55e"/>
+                  <stop offset="50%" stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#a855f7"/>
+                </linearGradient>
+              </defs>
 
-        <p>Daily: ₹${g.daily}</p>
+              <circle class="bg" cx="75" cy="75" r="${radius}" />
 
-        <p>Days Passed: ${daysPassed}</p>
-        <p>Days Left: ${daysLeft}</p>
+              <circle class="progress"
+                cx="75"
+                cy="75"
+                r="${radius}"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${offset}">
+              </circle>
+            </svg>
 
-        <p>Expected: ₹${expected}</p>
+            <div class="percent">${Math.round(percent)}%</div>
+            `
+          }
 
-        <p>Progress: ${Math.round(percent)}%</p>
+        </div>
 
-        <button class="save" onclick="save(${i})">Save ₹${g.daily}</button>
-        <button class="delete" onclick="removeGoal(${i})">Cancel</button>
+        <div class="title">${g.name}</div>
+        <div class="info">₹${g.saved} / ₹${g.target}</div>
+        <div class="info">Save ₹${daily}/day • ${days} days left</div>
+
+        <button class="btn save" onclick="save(${i})">Save</button>
+        <button class="btn delete" onclick="removeGoal(${i})">Cancel</button>
 
       </div>
     `;
@@ -135,12 +285,26 @@ function render() {
 }
 
 // SAVE
-function save(i){
+function save(i) {
   let g = goals[i];
 
-  g.saved += g.daily;
+  let today = new Date();
+  let target = new Date(g.date);
 
-  if(g.saved > g.target) g.saved = g.target;
+  let days = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+  let remaining = g.target - g.saved;
+  let daily = Math.ceil(remaining / days);
+
+  g.saved += daily;
+
+  fetch("https://script.google.com/macros/s/AKfycbz5FKKYyo36k9xfjWENw5borFMxBnw-9-rR4Az2785wcdPT1aXM4b9Qe74YzaqGxKEw/exec", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      goal: g.name,
+      amount: daily
+    })
+  });
 
   localStorage.setItem("goals", JSON.stringify(goals));
   render();
