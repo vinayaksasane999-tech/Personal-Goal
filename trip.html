@@ -13,12 +13,8 @@ body {
   color: white;
 }
 
-/* HEADER */
-h2 {
-  text-align: center;
-}
+h2 { text-align: center; }
 
-/* INPUT */
 .input-box {
   text-align: center;
   margin-bottom: 30px;
@@ -34,7 +30,6 @@ input {
   color: white;
 }
 
-/* ADD BUTTON */
 .add-btn {
   padding: 14px 24px;
   border-radius: 20px;
@@ -44,7 +39,6 @@ input {
   font-weight: 600;
 }
 
-/* CARD */
 .card {
   width: 290px;
   margin: auto;
@@ -56,7 +50,6 @@ input {
   text-align: center;
 }
 
-/* CIRCLE */
 .circle {
   width: 170px;
   height: 170px;
@@ -84,7 +77,6 @@ svg {
   transition: stroke-dashoffset 1s ease;
 }
 
-/* PERCENT */
 .percent {
   position: absolute;
   top: 50%;
@@ -92,38 +84,6 @@ svg {
   transform: translate(-50%, -50%);
   font-size: 24px;
 }
-
-/* TICK */
-.tick-svg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.tick-circle {
-  stroke: #34c759;
-  stroke-width: 6;
-  fill: none;
-  stroke-dasharray: 314;
-  stroke-dashoffset: 314;
-  animation: circleAnim 0.6s ease forwards;
-}
-
-.tick-mark {
-  stroke: #34c759;
-  stroke-width: 6;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  animation: tickAnim 0.4s ease forwards;
-  animation-delay: 0.5s;
-}
-
-@keyframes circleAnim { to { stroke-dashoffset: 0; } }
-@keyframes tickAnim { to { stroke-dashoffset: 0; } }
 
 /* BUTTONS */
 .btn {
@@ -136,54 +96,9 @@ svg {
   color: white;
 }
 
-.save {
-  background: linear-gradient(135deg, #0a84ff, #0066ff);
-}
+.save { background: linear-gradient(135deg, #0a84ff, #0066ff); }
+.delete { background: linear-gradient(135deg, #ff453a, #ff3b30); }
 
-.delete {
-  background: linear-gradient(135deg, #ff453a, #ff3b30);
-}
-
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-box {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(25px);
-  padding: 25px;
-  border-radius: 25px;
-  text-align: center;
-}
-
-.modal-box h3 {
-  margin: 10px 0;
-}
-
-/* CONFETTI */
-.confetti {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  background: red;
-  top: -10px;
-  animation: fall linear forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(100vh) rotate(360deg);
-  }
-}
 </style>
 </head>
 
@@ -201,15 +116,6 @@ svg {
 
 <div id="goals"></div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3>🎉 Goal Achieved!</h3>
-    <p>You completed your goal successfully</p>
-    <button class="btn save" onclick="closeModal()">Awesome</button>
-  </div>
-</div>
-
 <script>
 let goals = JSON.parse(localStorage.getItem("goals")) || [];
 
@@ -221,6 +127,7 @@ function addGoal() {
     date: document.getElementById("date").value,
     saved: 0
   };
+
   goals.push(goal);
   localStorage.setItem("goals", JSON.stringify(goals));
   render();
@@ -233,28 +140,6 @@ function removeGoal(i) {
   render();
 }
 
-// CONFETTI
-function blastConfetti() {
-  for(let i=0;i<50;i++){
-    let c = document.createElement("div");
-    c.className = "confetti";
-    c.style.left = Math.random()*100+"%";
-    c.style.background = ["#22c55e","#3b82f6","#f59e0b"][Math.floor(Math.random()*3)];
-    c.style.animationDuration = (Math.random()*2+2)+"s";
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),3000);
-  }
-}
-
-// MODAL
-function showModal() {
-  document.getElementById("modal").style.display = "flex";
-  blastConfetti();
-}
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-}
-
 // RENDER
 function render() {
   let container = document.getElementById("goals");
@@ -262,7 +147,16 @@ function render() {
 
   goals.forEach((g, i) => {
 
+    let today = new Date();
+    let targetDate = new Date(g.date);
+
+    let days = Math.max(1, Math.ceil((targetDate - today)/(1000*60*60*24)));
+
+    let remaining = g.target - g.saved;
+    let daily = Math.ceil(remaining / days);
+
     let percent = Math.min(100, (g.saved / g.target) * 100);
+
     let radius = 60;
     let circumference = 2 * Math.PI * radius;
     let offset = circumference - (percent / 100) * circumference;
@@ -271,33 +165,32 @@ function render() {
       <div class="card">
 
         <div class="circle">
-          ${
-            percent >= 100
-            ? `<svg class="tick-svg" width="140" height="140" viewBox="0 0 120 120">
-                <circle class="tick-circle" cx="60" cy="60" r="50"/>
-                <path class="tick-mark" d="M35 65 L55 85 L85 45"/>
-              </svg>`
-            :
-            `<svg viewBox="0 0 150 150">
-              <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#22c55e"/>
-                  <stop offset="50%" stop-color="#3b82f6"/>
-                  <stop offset="100%" stop-color="#a855f7"/>
-                </linearGradient>
-              </defs>
-              <circle class="bg" cx="75" cy="75" r="${radius}" />
-              <circle class="progress" cx="75" cy="75" r="${radius}"
-                stroke-dasharray="${circumference}"
-                stroke-dashoffset="${offset}">
-              </circle>
-            </svg>
-            <div class="percent">${Math.round(percent)}%</div>`
-          }
+          <svg viewBox="0 0 150 150">
+            <defs>
+              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#22c55e"/>
+                <stop offset="50%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+              </linearGradient>
+            </defs>
+
+            <circle class="bg" cx="75" cy="75" r="${radius}" />
+
+            <circle class="progress"
+              cx="75"
+              cy="75"
+              r="${radius}"
+              stroke-dasharray="${circumference}"
+              stroke-dashoffset="${offset}">
+            </circle>
+          </svg>
+
+          <div class="percent">${Math.round(percent)}%</div>
         </div>
 
         <h3>${g.name}</h3>
         <p>₹${g.saved} / ₹${g.target}</p>
+        <p>Save ₹${daily}/day • ${days} days left</p>
 
         <button class="btn save" onclick="save(${i})">Save</button>
         <button class="btn delete" onclick="removeGoal(${i})">Cancel</button>
@@ -307,17 +200,21 @@ function render() {
   });
 }
 
-// SAVE
+// SAVE (FIXED)
 function save(i) {
   let g = goals[i];
-  let daily = Math.ceil((g.target - g.saved)/5);
+
+  let today = new Date();
+  let targetDate = new Date(g.date);
+
+  let days = Math.max(1, Math.ceil((targetDate - today)/(1000*60*60*24)));
+  let remaining = g.target - g.saved;
+
+  let daily = Math.ceil(remaining / days);
 
   g.saved += daily;
 
-  if(g.saved >= g.target){
-    g.saved = g.target;
-    showModal();
-  }
+  if (g.saved > g.target) g.saved = g.target;
 
   localStorage.setItem("goals", JSON.stringify(goals));
   render();
