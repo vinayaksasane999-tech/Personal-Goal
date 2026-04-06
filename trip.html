@@ -9,12 +9,12 @@ body {
   margin: 0;
   font-family: -apple-system, Arial;
 
-  /* 🔥 YOUR APPLE-STYLE SOFT BACKGROUND */
+  /* 🔥 DARKER SOFT APPLE BACKGROUND */
   background:
-    radial-gradient(circle at 50% 0%, #eef4f8 0%, transparent 40%),
-    radial-gradient(circle at 50% 40%, #cfe3f2 0%, transparent 55%),
-    radial-gradient(circle at 50% 80%, #7fb3da 0%, transparent 70%),
-    linear-gradient(to bottom, #f5f9fc, #3f74a8);
+    radial-gradient(circle at 50% 0%, #dbe7f1 0%, transparent 40%),
+    radial-gradient(circle at 50% 40%, #9ec3df 0%, transparent 55%),
+    radial-gradient(circle at 50% 80%, #5f96c7 0%, transparent 70%),
+    linear-gradient(to bottom, #dfeaf3, #2f5f94);
 
   padding: 20px;
   color: white;
@@ -23,6 +23,7 @@ body {
 h2 {
   text-align: center;
   font-weight: 600;
+  color: #f1f5f9; /* brighter title */
 }
 
 /* INPUT */
@@ -31,18 +32,23 @@ h2 {
   margin-bottom: 30px;
 }
 
-/* GLASS INPUT */
+/* 🔥 INPUT FIX (VISIBLE NOW) */
 input {
   padding: 14px;
   margin: 6px;
   border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
 
-  background: rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.25); /* darker glass */
   backdrop-filter: blur(20px);
 
-  color: white;
+  color: #ffffff;
   width: 28%;
+}
+
+/* placeholder visibility */
+input::placeholder {
+  color: rgba(255,255,255,0.7);
 }
 
 /* ADD BUTTON */
@@ -59,20 +65,20 @@ input {
   box-shadow: 0 8px 20px rgba(52,199,89,0.3);
 }
 
-/* CARD */
+/* 🔥 CARD DARKENED */
 .card {
   width: 290px;
   margin: 25px auto;
   padding: 28px;
   border-radius: 32px;
 
-  background: rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.25); /* darker glass */
   backdrop-filter: blur(25px);
 
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.2);
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.4),
+    0 10px 30px rgba(0,0,0,0.5),
     inset 0 1px 1px rgba(255,255,255,0.1);
 
   text-align: center;
@@ -91,7 +97,7 @@ input {
   position: relative;
 
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
+  background: rgba(0,0,0,0.2);
   backdrop-filter: blur(20px);
 
   box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
@@ -106,7 +112,7 @@ svg {
 /* BG */
 .bg {
   fill: none;
-  stroke: rgba(255,255,255,0.12);
+  stroke: rgba(255,255,255,0.2);
   stroke-width: 12;
 }
 
@@ -116,7 +122,7 @@ svg {
   stroke-width: 12;
   stroke-linecap: round;
   stroke: url(#grad);
-  filter: drop-shadow(0 0 8px rgba(59,130,246,0.5));
+  filter: drop-shadow(0 0 8px rgba(59,130,246,0.6));
   transition: stroke-dashoffset 1s ease;
 }
 
@@ -167,16 +173,17 @@ svg {
   to { stroke-dashoffset: 0; }
 }
 
-/* TEXT */
+/* TEXT FIX */
 .title {
   margin-top: 15px;
   font-size: 18px;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .info {
   font-size: 14px;
-  color: #cbd5f5;
+  color: #e2e8f0;
 }
 
 /* BUTTONS */
@@ -190,7 +197,7 @@ svg {
   font-size: 16px;
   color: white;
 
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
 }
 
 .save {
