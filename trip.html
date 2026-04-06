@@ -9,9 +9,12 @@ body {
   margin: 0;
   font-family: -apple-system, Arial;
 
-  /* PREMIUM GRADIENT BACKGROUND */
-  background: radial-gradient(circle at 20% 20%, #1e3a8a, #0f172a 60%),
-              radial-gradient(circle at 80% 80%, #1d4ed8, transparent 60%);
+  /* 🔥 YOUR APPLE-STYLE SOFT BACKGROUND */
+  background:
+    radial-gradient(circle at 50% 0%, #eef4f8 0%, transparent 40%),
+    radial-gradient(circle at 50% 40%, #cfe3f2 0%, transparent 55%),
+    radial-gradient(circle at 50% 80%, #7fb3da 0%, transparent 70%),
+    linear-gradient(to bottom, #f5f9fc, #3f74a8);
 
   padding: 20px;
   color: white;
@@ -42,7 +45,7 @@ input {
   width: 28%;
 }
 
-/* ADD BUTTON (UNCHANGED STYLE FEEL, SLIGHT POLISH) */
+/* ADD BUTTON */
 .add-btn {
   padding: 14px 24px;
   border-radius: 22px;
@@ -56,30 +59,26 @@ input {
   box-shadow: 0 8px 20px rgba(52,199,89,0.3);
 }
 
-/* LIQUID GLASS CARD */
+/* CARD */
 .card {
   width: 290px;
   margin: 25px auto;
   padding: 28px;
   border-radius: 32px;
 
-  /* GLASS */
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(25px);
 
   border: 1px solid rgba(255,255,255,0.18);
 
-  /* DEPTH */
   box-shadow:
     0 10px 30px rgba(0,0,0,0.4),
     inset 0 1px 1px rgba(255,255,255,0.1);
 
   text-align: center;
-
   transition: 0.3s ease;
 }
 
-/* FLOAT EFFECT */
 .card:hover {
   transform: translateY(-6px) scale(1.01);
 }
@@ -91,7 +90,6 @@ input {
   margin: auto;
   position: relative;
 
-  /* GLASS RING CONTAINER */
   border-radius: 50%;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(20px);
@@ -118,10 +116,7 @@ svg {
   stroke-width: 12;
   stroke-linecap: round;
   stroke: url(#grad);
-
-  /* SOFT GLOW */
   filter: drop-shadow(0 0 8px rgba(59,130,246,0.5));
-
   transition: stroke-dashoffset 1s ease;
 }
 
@@ -135,7 +130,7 @@ svg {
   font-weight: 600;
 }
 
-/* TICK (UNCHANGED) */
+/* TICK */
 .tick-svg {
   position: absolute;
   top: 50%;
@@ -184,7 +179,7 @@ svg {
   color: #cbd5f5;
 }
 
-/* BUTTONS (APPLE STYLE KEPT, SLIGHT DEPTH ADDED) */
+/* BUTTONS */
 .btn {
   margin-top: 14px;
   padding: 15px;
@@ -247,7 +242,7 @@ function removeGoal(i) {
   render();
 }
 
-// RENDER (UNCHANGED)
+// RENDER
 function render() {
   let container = document.getElementById("goals");
   container.innerHTML = "";
@@ -320,7 +315,7 @@ function render() {
   });
 }
 
-// SAVE (UNCHANGED)
+// SAVE
 function save(i) {
   let g = goals[i];
 
