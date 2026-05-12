@@ -4,10 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Goal Saver Premium</title>
 
-<!-- Standard favicon for browser tabs -->
 <link rel="icon" type="image/x-icon" href="logo.ico">
 
-<!-- 🔥 ADDED FOR IPHONE APP ICON -->
 <link rel="apple-touch-icon" href="logo.png">
 
 <style>
@@ -53,8 +51,8 @@ h2 {
   margin-bottom: 30px;
 }
 
-/* 🔥 STRONG DARK INPUT */
-input {
+/* 🔥 STRONG DARK INPUTS & SELECT */
+input, select {
   padding: 14px;
   margin: 6px;
   border-radius: 18px;
@@ -67,6 +65,13 @@ input {
   color: #ffffff;
   width: 28%;
   box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Makes the dropdown text legible on iOS */
+select option {
+  background: #274d78; 
+  color: white;
 }
 
 input::placeholder {
@@ -76,6 +81,7 @@ input::placeholder {
 /* ADD BUTTON */
 .add-btn {
   padding: 14px 24px;
+  margin-top: 10px;
   border-radius: 22px;
   border: none;
   cursor: pointer;
@@ -86,8 +92,6 @@ input::placeholder {
   font-size: 15px;
 
   box-shadow: 0 8px 20px rgba(52,199,89,0.3);
-  
-  /* Smooth iOS-style press animation */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -173,6 +177,7 @@ svg {
 .info {
   font-size: 14px;
   color: #f1f5f9;
+  margin-top: 4px;
 }
 
 /* BUTTONS */
@@ -188,8 +193,6 @@ svg {
   cursor: pointer;
 
   box-shadow: 0 6px 15px rgba(0,0,0,0.5);
-  
-  /* Smooth iOS-style press animation */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -211,7 +214,6 @@ svg {
 <body>
 
 <div class="header-container">
-  <!-- Replace "your-logo.png" with the path to your actual logo image -->
   <img src="logo.png" alt="Goal Saver Logo" class="app-logo">
   <h2>My Goals 🎯</h2>
 </div>
@@ -220,6 +222,16 @@ svg {
   <input id="name" placeholder="Goal name">
   <input id="amount" placeholder="Amount">
   <input id="date" type="date">
+  
+  <select id="frequency">
+    <option value="1" data-label="day">Daily</option>
+    <option value="15" data-label="15 days">Every 15 Days</option>
+    <option value="30" data-label="month">Monthly</option>
+    <option value="90" data-label="3 months">Quarterly (3 Mos)</option>
+    <option value="180" data-label="6 months">Half-Yearly</option>
+    <option value="365" data-label="year">Annually</option>
+  </select>
+
   <br>
   <button class="add-btn" onclick="addGoal()">Add Goal</button>
 </div>
@@ -231,10 +243,15 @@ let goals = JSON.parse(localStorage.getItem("goals")) || [];
 
 // ADD
 function addGoal() {
+  let freqSelect = document.getElementById("frequency");
+  let selectedOption = freqSelect.options[freqSelect.selectedIndex];
+
   let goal = {
     name: document.getElementById("name").value,
     target: Number(document.getElementById("amount").value),
     date: document.getElementById("date").value,
+    freqValue: Number(selectedOption.value), // Stores the number of days (e.g., 30)
+    freqLabel: selectedOption.getAttribute("data-label"), // Stores the text (e.g., "month")
     saved: 0
   };
 
@@ -260,9 +277,17 @@ function render() {
     let today = new Date();
     let target = new Date(g.date);
 
-    let days = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+    // Fallback for older goals created before the update
+    let freqVal = g.freqValue || 1; 
+    let freqLab = g.freqLabel || "day";
+
+    let totalDays = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+    
+    // Calculate how many saving "periods" are left based on frequency
+    let periods = Math.max(1, Math.ceil(totalDays / freqVal));
+    
     let remaining = g.target - g.saved;
-    let daily = Math.ceil(remaining / days);
+    let amountPerPeriod = Math.ceil(remaining / periods);
 
     let percent = Math.min(100, (g.saved / g.target) * 100);
 
@@ -300,7 +325,8 @@ function render() {
 
         <div class="title">${g.name}</div>
         <div class="info">₹${g.saved} / ₹${g.target}</div>
-        <div class="info">Save ₹${daily}/day • ${days} days left</div>
+        
+        <div class="info">Save ₹${amountPerPeriod} / ${freqLab} • ${totalDays} days left</div>
 
         <button class="btn save" onclick="save(${i})">Save</button>
         <button class="btn delete" onclick="removeGoal(${i})">Cancel</button>
@@ -317,18 +343,22 @@ function save(i) {
   let today = new Date();
   let target = new Date(g.date);
 
-  let days = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
-  let remaining = g.target - g.saved;
-  let daily = Math.ceil(remaining / days);
+  let freqVal = g.freqValue || 1; 
 
-  g.saved += daily;
+  let totalDays = Math.max(1, Math.ceil((target - today)/(1000*60*60*24)));
+  let periods = Math.max(1, Math.ceil(totalDays / freqVal));
+  let remaining = g.target - g.saved;
+  let amountPerPeriod = Math.ceil(remaining / periods);
+
+  // Prevent saving more than the target amount due to rounding up
+  g.saved = Math.min(g.target, g.saved + amountPerPeriod);
 
   fetch("https://script.google.com/macros/s/AKfycbz5FKKYyo36k9xfjWENw5borFMxBnw-9-rR4Az2785wcdPT1aXM4b9Qe74YzaqGxKEw/exec", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({
       goal: g.name,
-      amount: daily
+      amount: amountPerPeriod
     })
   });
 
