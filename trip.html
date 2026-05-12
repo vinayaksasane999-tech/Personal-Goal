@@ -4,6 +4,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Goal Saver Premium</title>
 
+<!-- 🔥 FAVICON ADDED HERE -->
+<link rel="icon" type="image/x-icon" href="logo.ico">
+<!-- You can also use a PNG for modern browsers: -->
+<!-- <link rel="icon" type="image/png" href="logo.PNG"> -->
+
 <style>
 body {
   margin: 0;
@@ -20,10 +25,25 @@ body {
   color: white;
 }
 
+/* 🔥 LOGO & HEADER STYLES ADDED HERE */
+.header-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.app-logo {
+  width: 80px; /* Adjust size as needed */
+  height: auto;
+  border-radius: 20px; /* Gives it a nice rounded app-icon look */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  margin-bottom: 10px;
+}
+
 h2 {
   text-align: center;
   font-weight: 600;
   color: #ffffff;
+  margin-top: 0; /* Adjusted to sit nicely under the logo */
 }
 
 /* INPUT */
@@ -166,7 +186,12 @@ svg {
 
 <body>
 
-<h2>My Goals 🎯</h2>
+<!-- 🔥 LOGO ADDED HERE -->
+<div class="header-container">
+  <!-- Replace "your-logo.png" with the path to your actual logo image -->
+  <img src="your-logo.png" alt="Goal Saver Logo" class="app-logo">
+  <h2>My Goals 🎯</h2>
+</div>
 
 <div class="input-box">
   <input id="name" placeholder="Goal name">
